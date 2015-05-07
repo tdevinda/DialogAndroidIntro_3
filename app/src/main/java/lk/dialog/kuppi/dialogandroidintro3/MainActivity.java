@@ -1,6 +1,7 @@
 package lk.dialog.kuppi.dialogandroidintro3;
 
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,42 +22,14 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
 
-        final TextView statusView = (TextView) findViewById(R.id.text_status);
         Button taskButton = (Button) findViewById(R.id.btn_doTask);
 
         taskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                dialog = ProgressDialog.show(MainActivity.this, "Executing", "Starting...");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        for (int i = 0; i < 10; i++) {
-                            int reply = Utilities.doLargeTask(5);
-                            Log.i("Demo3", "Reply is " + reply);
-
-                            runOnUiThread(new Runnable() {
-                               @Override
-                               public void run() {
-                                   dialog.setMessage("Times done:"+ Utilities.getCounter());
-                               }
-                           });
-
-                        }
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                statusView.setText("Got "+ Utilities.getCounter());
-                                dialog.dismiss();
-                            }
-                        });
-
-                    }
-                }).start();
-
+                LargeTask task = new LargeTask();
+                task.execute(10);
             }
         });
     }
@@ -78,5 +51,39 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private class LargeTask extends AsyncTask<Integer, Integer, Integer> {
+        @Override
+        protected void onPreExecute() {
+            dialog = ProgressDialog.show(MainActivity.this, "Executing", "Starting...");
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... params) {
+            int reply = 0;
+            for (int i = 0; i < params[0]; i++) {
+                reply = Utilities.doLargeTask(5);
+                Log.i("Demo3", "Reply is " + reply);
+
+                publishProgress(i);
+
+            }
+
+            return reply;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            dialog.setMessage("Times done:"+ values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            TextView statusView = (TextView) findViewById(R.id.text_status);
+            statusView.setText("Got "+ integer);
+            dialog.dismiss();
+        }
     }
 }
