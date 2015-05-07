@@ -2,6 +2,7 @@ package lk.dialog.kuppi.dialogandroidintro3;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +23,17 @@ public class MainActivity extends ActionBarActivity {
         taskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int reply = Utilities.doLargeTask(15);
-                statusView.setText("Got " + reply);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int reply = Utilities.doLargeTask(15);
+                        Log.i("Demo3", "Reply is " + reply);
+
+                        statusView.setText("Got "+ reply);
+                    }
+                }).start();
+
             }
         });
     }
