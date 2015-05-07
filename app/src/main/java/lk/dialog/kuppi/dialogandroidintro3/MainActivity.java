@@ -22,7 +22,8 @@ public class MainActivity extends ActionBarActivity {
         taskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                statusView.setText("I clicked that button");
+                int reply = Utilities.doLargeTask(15);
+                statusView.setText("Got " + reply);
             }
         });
     }
