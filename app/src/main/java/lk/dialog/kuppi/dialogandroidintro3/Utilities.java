@@ -17,4 +17,8 @@ public class Utilities {
 
         return COUNTER++;
     }
+
+    public static int getCounter() {
+        return COUNTER;
+    }
 }
