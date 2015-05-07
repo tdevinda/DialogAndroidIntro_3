@@ -1,5 +1,6 @@
 package lk.dialog.kuppi.dialogandroidintro3;
 
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -28,8 +29,10 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                LargeTask task = new LargeTask();
-                task.execute(10);
+                FragmentTransaction transaction = getFragmentManager().
+                        beginTransaction().add(new BlankFragment(), "LARGETASK");
+
+                transaction.commit();
             }
         });
     }
@@ -53,37 +56,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private class LargeTask extends AsyncTask<Integer, Integer, Integer> {
-        @Override
-        protected void onPreExecute() {
-            dialog = ProgressDialog.show(MainActivity.this, "Executing", "Starting...");
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... params) {
-            int reply = 0;
-            for (int i = 0; i < params[0]; i++) {
-                reply = Utilities.doLargeTask(5);
-                Log.i("Demo3", "Reply is " + reply);
-
-                publishProgress(i);
-
-            }
-
-            return reply;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            dialog.setMessage("Times done:"+ values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            TextView statusView = (TextView) findViewById(R.id.text_status);
-            statusView.setText("Got "+ integer);
-            dialog.dismiss();
-        }
-    }
 }
